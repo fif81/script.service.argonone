@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="32001">
+        <setting label="32002" type="number" id="checkinterval"/>
+        <setting label="32003" type="number" id="numberofchecks"/>
+        <setting label="32004" type="enum" id="fanpowermin" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="0"/>
+        <setting label="32005" type="lsep"/>
+        <setting label="32006" type="enum" id="fanpower30" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="0"/>
+        <setting label="32007" type="enum" id="fanpower40" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="0"/>
+        <setting label="32008" type="enum" id="fanpower45" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="0"/>
+        <setting label="32009" type="enum" id="fanpower50" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="0"/>
+        <setting label="32010" type="enum" id="fanpower55" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="10"/>
+        <setting label="32011" type="enum" id="fanpower60" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="55"/>
+        <setting label="32012" type="enum" id="fanpower65" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="100"/>
+        <setting label="32013" type="enum" id="fanpower70" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="100"/>
+        <setting label="32014" type="enum" id="fanpower75" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="100"/>
+        <setting label="32015" type="enum" id="fanpower80" values="0|10|15|20|25|30|35|40|45|50|55|60|65|70|80|90|100" default="100"/>
+    </category>
+</settings>
