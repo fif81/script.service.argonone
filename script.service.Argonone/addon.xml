@@ -11,7 +11,7 @@
   <extension point="xbmc.service" library="service.py" />
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
-    <license>GPL-2.0-or-later</license>
+    <license>NLPL</license>
     <summary lang="en">service addon supporting argonone case features</summary>
     <summary lang="de">Addon zur Unterstützung der Funktionen des Argonone Gehäuses</summary>
     <source>https://github.com/fif81/Libreelec-Argonone</source>
@@ -20,7 +20,6 @@
     </news>
     <assets>
         <icon>resources/icon.png</icon>
-        <fanart>resources/fanart.jpg</fanart>
     </assets>
   </extension>
 </addon>
