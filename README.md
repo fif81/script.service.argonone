@@ -1,6 +1,6 @@
-# Libreelec add-on for rasperry pi case named Argon ONE V2 producted by Argon 40
-#
-# This software is neither provided nor supported by the named company.
+# Libreelec add-on for rasperry pi case named Argon ONE V2 produced by Argon 40
+
+This software is neither provided nor supported by the named company.
 The brand name is only used for description.
 The author of the software is in no way related to the manufacturer of the hardware mentioned.  
 
