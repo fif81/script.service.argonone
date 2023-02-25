@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="32001">
-        <setting label="32002" type="number" id="checkinterval"/>
-        <setting label="32003" type="number" id="numberofchecks"/>
+        <setting label="32002" type="slider" id="checkinterval" range="5,5,300" default="30"/>
+        <setting label="32003" type="slider" id="numberofchecks" range="1,10" default="2"/>
         <setting label="32004" type="slider" id="fanpowermin" range="0,100" default="0" option="percent"/>
         <setting label="32005" type="lsep"/>
         <setting label="32006" type="slider" id="fanpower30" range="0,100" default="0" option="percent"/>
@@ -17,3 +17,4 @@
         <setting label="32015" type="slider" id="fanpower80" range="0,100" default="100" option="percent"/>
     </category>
 </settings>
+
