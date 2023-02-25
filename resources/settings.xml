@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="32001">
+        <setting label="32002" type="slider" id="checkinterval" range="5,5,300" default="30"/>
+        <setting label="32003" type="slider" id="numberofchecks" range="1,10" default="2"/>
+        <setting label="32004" type="slider" id="fanpowermin" range="0,100" default="0" option="percent"/>
+        <setting label="32005" type="lsep"/>
+        <setting label="32006" type="slider" id="fanpower30" range="0,100" default="0" option="percent"/>
+        <setting label="32007" type="slider" id="fanpower40" range="0,100" default="0" option="percent"/>
+        <setting label="32008" type="slider" id="fanpower45" range="0,100" default="0" option="percent"/>
+        <setting label="32009" type="slider" id="fanpower50" range="0,100" default="0" option="percent"/>
+        <setting label="32010" type="slider" id="fanpower55" range="0,100" default="10" option="percent"/>
+        <setting label="32011" type="slider" id="fanpower60" range="0,100" default="55" option="percent"/>
+        <setting label="32012" type="slider" id="fanpower65" range="0,100" default="100" option="percent"/>
+        <setting label="32013" type="slider" id="fanpower70" range="0,100" default="100" option="percent"/>
+        <setting label="32014" type="slider" id="fanpower75" range="0,100" default="100" option="percent"/>
+        <setting label="32015" type="slider" id="fanpower80" range="0,100" default="100" option="percent"/>
+    </category>
+</settings>
+
