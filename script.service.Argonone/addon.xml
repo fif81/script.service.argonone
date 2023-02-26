@@ -5,8 +5,8 @@
        provider-name="fif81">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
-    <import addon="virtual.system-tools" version="10.0.0.127" />
     <import addon="virtual.rpi-tools" version="10.0.0.111" />
+    <import addon="virtual.system-tools" version="10.0.0.127" />
   </requires>
   <extension point="xbmc.service" library="addon.py" />
   <extension point="xbmc.addon.metadata">

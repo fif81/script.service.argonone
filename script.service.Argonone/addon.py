@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import xbmc
 import xbmcaddon
 import xbmcvfs
@@ -58,26 +59,49 @@ class FanControl(xbmc.Monitor):
         xbmc.log("## {0} ## got event =>>>> {1} from: {2} with data: {3}".format(self.name, method, sender, data), level = xbmc.LOGDEBUG)
         if method == 'System.OnQuit':
             self.systemOnShutdown = True
+        elif method == 'System.OnRestart':
+            self.systemOnRestart = True
+
+    def onSignalEdge(self, gpio):
+        xbmc.log("## {0} ## gpio edge detected on pin {1}!".format(self.name, gpio), level = xbmc.LOGDEBUG)
+        currentTime = time.time()
+        level = GPIO.input(gpio)
+        if level == GPIO.HIGH:
+            self.PwrRiseTime = currentTime
+        elif self.PwrRiseTime != None:
+            signalLength = currentTime - self.PwrRiseTime
+            xbmc.log("## {0} ## signal detected! Duration: {1}".format(self.name, signalLength), level = xbmc.LOGDEBUG)
+            if signalLength < 0.03:
+                xbmc.log("## {0} ## I will trigger a restart!".format(self.name, signalLength), level = xbmc.LOGDEBUG)
+                xbmc.restart()
+            else:
+                xbmc.log("## {0} ## I will trigger a shutdown!".format(self.name, signalLength), level = xbmc.LOGDEBUG)
+                xbmc.shutdown()
 
     def main(self):
-
         # This is for fan control
-        bus = smbus.SMBus(0 if GPIO.RPI_INFO['P1_REVISION'] == 1 else 1)  
-        tempCache = []
-        currentFanValue = -1
+        self.bus = smbus.SMBus(0 if GPIO.RPI_INFO['P1_REVISION'] == 1 else 1)  
 
         # This is for power button control
+        self.PwrRiseTime = None
+        PWR_BUTTON = 4
         GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
-        # Power button events sends a signal to pin 4
-        GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+        GPIO.setmode(GPIO.BCM) 
+        GPIO.setup(PWR_BUTTON, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+        def onSignalEdge(gpio):
+            self.onSignalEdge(gpio)
+        GPIO.remove_event_detect(PWR_BUTTON)
+        GPIO.add_event_detect(PWR_BUTTON, GPIO.BOTH, callback = onSignalEdge)
 
+        tempCache = []
+        currentFanValue = -1
         self.skipWaitForAbort = True
         self.systemOnShutdown = False
+        self.systemOnRestart = False
         while not self.abortRequested():
 
             # if settings change we have to recalculate fan power so we do not waitForAbort(self.checkInterval)
-            # self.skipWaitForAbout is True after settings have changed
+            # self.skipWaitForAbort is True after settings have changed
             waitTime = self.checkInterval
             abortRequestedDuringWait = False
             while not abortRequestedDuringWait and waitTime > 0 and not self.skipWaitForAbort:
@@ -118,7 +142,7 @@ class FanControl(xbmc.Monitor):
                     # send value only if changed
                     if currentFanValue != fanValue:
                         xbmc.log("## {0} ## will set fan power to {1}%".format(self.name, fanValue), level = xbmc.LOGDEBUG)
-                        bus.write_byte(0x1a, fanValue)
+                        self.bus.write_byte(0x1a, fanValue)
                         currentFanValue = fanValue
                     else:
                         xbmc.log("## {0} ## fan power is already {1}%".format(self.name, fanValue), level = xbmc.LOGDEBUG)
@@ -126,11 +150,14 @@ class FanControl(xbmc.Monitor):
                 
         # termination - say goodbye ..!    
         xbmc.log("## {0} ## got abort request - will stop fan".format(self.name), level = xbmc.LOGDEBUG)
+        # stop listening to power button signal
+        GPIO.remove_event_detect(PWR_BUTTON)
         # fan off (0%)
-        bus.write_byte(0x1a, 0x00)
+        self.bus.write_byte(0x1a, 0x00)
         # ready for power cut? - watches UART
-        if self.systemOnShutdown:
-            bus.write_byte(0x1a, 0xFF)
+        if self.systemOnShutdown and not self.systemOnRestart:
+            xbmc.log("## {0} ## sending signal to make case watching UART for power cut".format(self.name), level = xbmc.LOGDEBUG)
+            self.bus.write_byte(0x1a, 0xFF)
 
 if __name__ == '__main__':
     FanControl()    
