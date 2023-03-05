@@ -1,20 +1,184 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <category label="32001">
-        <setting label="32002" type="slider" id="checkinterval" range="5,5,300" default="30"/>
-        <setting label="32003" type="slider" id="numberofchecks" range="1,10" default="2"/>
-        <setting label="32004" type="slider" id="fanpowermin" range="0,100" default="0" option="percent"/>
-        <setting label="32005" type="lsep"/>
-        <setting label="32006" type="slider" id="fanpower30" range="0,100" default="0" option="percent"/>
-        <setting label="32007" type="slider" id="fanpower40" range="0,100" default="0" option="percent"/>
-        <setting label="32008" type="slider" id="fanpower45" range="0,100" default="0" option="percent"/>
-        <setting label="32009" type="slider" id="fanpower50" range="0,100" default="0" option="percent"/>
-        <setting label="32010" type="slider" id="fanpower55" range="0,100" default="10" option="percent"/>
-        <setting label="32011" type="slider" id="fanpower60" range="0,100" default="55" option="percent"/>
-        <setting label="32012" type="slider" id="fanpower65" range="0,100" default="100" option="percent"/>
-        <setting label="32013" type="slider" id="fanpower70" range="0,100" default="100" option="percent"/>
-        <setting label="32014" type="slider" id="fanpower75" range="0,100" default="100" option="percent"/>
-        <setting label="32015" type="slider" id="fanpower80" range="0,100" default="100" option="percent"/>
-    </category>
+<settings version="1">
+    <section id="script.service.Argonone">
+        <category id="general" label="32001" help="">
+
+            <group id="1" label="32002">
+
+                <setting id="checkinterval" type="integer" label="32003" help="">
+                    <level>0</level>
+                    <default>30</default>
+                    <constraints>
+                        <minimum>5</minimum>
+                        <step>5</step>
+                        <maximum>300</maximum>
+                    </constraints>
+                    <control type="slider" format="integer">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="numberofchecks" type="integer" label="32004" help="">
+                    <level>0</level>
+                    <default>2</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>10</maximum>
+                    </constraints>
+                    <control type="slider" format="integer">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpowermin" type="integer" label="32005" help="">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+            
+            </group>
+
+            <group id="2" label="32006">
+
+                <setting id="fanpower30" type="integer" label="32007" help="">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower40" type="integer" label="32008" help="">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower45" type="integer" label="32009" help="">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower50" type="integer" label="32010" help="">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower55" type="integer" label="32011" help="">
+                    <level>0</level>
+                    <default>10</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower60" type="integer" label="32012" help="">
+                    <level>0</level>
+                    <default>55</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower65" type="integer" label="32013" help="">
+                    <level>0</level>
+                    <default>100</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower70" type="integer" label="32014" help="">
+                    <level>0</level>
+                    <default>100</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower75" type="integer" label="32015" help="">
+                    <level>0</level>
+                    <default>100</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+
+                <setting id="fanpower80" type="integer" label="32016" help="">
+                    <level>0</level>
+                    <default>100</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>100</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+            </group>
+        </category>
+    </section>
 </settings>
 

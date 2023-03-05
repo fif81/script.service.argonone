@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 import time
 import xbmc
 import xbmcaddon
@@ -15,32 +16,74 @@ for specialDir in ['special://home', 'special://xbmc']:
 
 import smbus
 
-class FanControl(xbmc.Monitor):
+class ArgonControl(xbmc.Monitor):
 
     def __init__(self):
-        self.addon = xbmcaddon.Addon()
-        self.name = self.addon.getAddonInfo('name')
+        # addon name used for logging
+        self.name = xbmcaddon.Addon().getAddonInfo('name')
+
+        # next time cpu temperature is checked for fan control      
+        self.nextUpdate = time.time()
+
+        # was there a notification 'System.OnQuit'?
+        self.systemQuitting = False
+
+        # was there a notification 'System.OnRestart'?
+        self.systemRestarting = False
+
+        # is this addon stopping or stopped?
+        self.stopping = False
+
+        # did the user change the settings since last cpu temperature check?
+        self.settingsChanged = False
+
+        # time when a rising edge on power button signal was detected
+        self.pwrRiseTime = None
+
+        # load settings initially
         self.loadSettings()
-        self.main()
+
+        # used for synchronisation of stopAddon(), smbus writes and wait() in temperature check loop
+        self.cv = threading.Condition(lock = threading.Lock())
+        
+         # initialize smbus for fan control
+        self.smbus = smbus.SMBus(0 if GPIO.RPI_INFO['P1_REVISION'] == 1 else 1)     
+
+        # initialize GPIO library and shutdown/reset button pin. Activate pull-down-resistor for shutdown/reset pin
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM) 
+        GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+
+        try:
+            # watch GPIO pin used for shutdown/reset button
+            def onSignalEdge(gpio):
+                self.onSignalEdge(gpio)
+            GPIO.remove_event_detect(4)
+            GPIO.add_event_detect(4, GPIO.BOTH, callback = onSignalEdge)
+        except:
+            # if something goes wrong, remove pull-down-resistor to avoid short-circuits
+            GPIO.cleanup(4)
+            raise
 
     def loadSettings(self):
-        self.checkInterval = int(self.addon.getSetting('checkinterval'))
-        self.numberOfChecks = int(self.addon.getSetting('numberofchecks'))
+        addon = xbmcaddon.Addon()
+        self.checkInterval = int(addon.getSetting('checkinterval'))
+        self.numberOfChecks = int(addon.getSetting('numberofchecks'))
         previousValue = -1
         powerMap = []
         for label in [
-            (-274, 'fanpowermin'),
-            (30, 'fanpower30'),
-            (40, 'fanpower40'),
-            (45, 'fanpower45'),
-            (50, 'fanpower50'),
-            (55, 'fanpower55'),
-            (60, 'fanpower60'),
-            (65, 'fanpower65'),
-            (70, 'fanpower70'),
-            (75, 'fanpower75'),
-            (80, 'fanpower80')]:
-            powerValue = int(self.addon.getSetting(label[1]))
+                (-274, 'fanpowermin'),
+                (30, 'fanpower30'),
+                (40, 'fanpower40'),
+                (45, 'fanpower45'),
+                (50, 'fanpower50'),
+                (55, 'fanpower55'),
+                (60, 'fanpower60'),
+                (65, 'fanpower65'),
+                (70, 'fanpower70'),
+                (75, 'fanpower75'),
+                (80, 'fanpower80')]:
+            powerValue = int(addon.getSetting(label[1]))
             if previousValue < powerValue:
                 powerMap.insert(0, (label[0], powerValue))
                 xbmc.log("## {0} ## added thresold to mapping: {1} -> {2}".format(self.name, label[0], powerValue), level = xbmc.LOGDEBUG)
@@ -48,74 +91,99 @@ class FanControl(xbmc.Monitor):
             elif previousValue > powerValue:
                 xbmc.log("## {0} ## ignoring thresold {1} -> {2} because previous fan power setting(s) was/were higher!".format(self.name, label[0], powerValue), level = xbmc.LOGDEBUG)     
         self.tempToFanPower = powerMap
-        self.skipWaitForAbort = True
         xbmc.log("## {0} ## reloaded settings".format(self.name), level = xbmc.LOGDEBUG)
 
     def onSettingsChanged(self):
-        self.loadSettings()
-        self.skipWaitForAbort = True
+        xbmc.log("## {0} ## entered onSettingsChanged".format(self.name), level = xbmc.LOGDEBUG)
+        with self.cv:
+            self.loadSettings()
+            self.settingsChanged = True
+            self.cv.notify_all()
 
     def onNotification(self, sender, method, data):
         xbmc.log("## {0} ## got event =>>>> {1} from: {2} with data: {3}".format(self.name, method, sender, data), level = xbmc.LOGDEBUG)
+
+        # Kodi's termination event
         if method == 'System.OnQuit':
-            self.systemOnShutdown = True
+            self.systemQuitting = True
+            self.stopAddon()
+
+        # Kodi's restart event - System.OnQuit follows
         elif method == 'System.OnRestart':
-            self.systemOnRestart = True
+            self.systemRestarting = True
+            self.stopAddon()
 
     def onSignalEdge(self, gpio):
         xbmc.log("## {0} ## gpio edge detected on pin {1}!".format(self.name, gpio), level = xbmc.LOGDEBUG)
-        currentTime = time.time()
+        currentTime = time.time_ns()
         level = GPIO.input(gpio)
         if level == GPIO.HIGH:
-            self.PwrRiseTime = currentTime
-        elif self.PwrRiseTime != None:
-            signalLength = currentTime - self.PwrRiseTime
-            xbmc.log("## {0} ## signal detected! Duration: {1}".format(self.name, signalLength), level = xbmc.LOGDEBUG)
-            if signalLength < 0.03:
+            self.pwrRiseTime = currentTime
+        elif self.pwrRiseTime != None:
+            signalLength = currentTime - self.pwrRiseTime
+            xbmc.log("## {0} ## signal detected! Duration: {1} ns".format(self.name, signalLength), level = xbmc.LOGDEBUG)
+            if signalLength < 30000000:
                 xbmc.log("## {0} ## I will trigger a restart!".format(self.name, signalLength), level = xbmc.LOGDEBUG)
                 xbmc.restart()
             else:
                 xbmc.log("## {0} ## I will trigger a shutdown!".format(self.name, signalLength), level = xbmc.LOGDEBUG)
                 xbmc.shutdown()
 
-    def main(self):
-        # This is for fan control
-        self.bus = smbus.SMBus(0 if GPIO.RPI_INFO['P1_REVISION'] == 1 else 1)  
+    def stopAddon(self):
+        if not self.stopping:
+            with self.cv:
+                if not self.stopping:
+                    try:
+                        xbmc.log("## {0} ## method stopAddon called".format(self.name), level = xbmc.LOGDEBUG)
+                        xbmc.log("## {0} ## disabling event detection".format(self.name), level = xbmc.LOGDEBUG)
+                         
+                        # stop listening to power button signal
+                        GPIO.remove_event_detect(4)
+                        
+                        # cleanup GPIO configuration is recommended
+                        GPIO.cleanup(4)
 
-        # This is for power button control
-        self.PwrRiseTime = None
-        PWR_BUTTON = 4
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM) 
-        GPIO.setup(PWR_BUTTON, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
-        def onSignalEdge(gpio):
-            self.onSignalEdge(gpio)
-        GPIO.remove_event_detect(PWR_BUTTON)
-        GPIO.add_event_detect(PWR_BUTTON, GPIO.BOTH, callback = onSignalEdge)
+                        # fan off (0%)
+                        xbmc.log("## {0} ## switching fan off".format(self.name), level = xbmc.LOGDEBUG)
+                        self.smbus.write_byte(0x1a, 0x00)
+
+                        # ready for power cut? - watches UART
+                        if self.systemQuitting and not self.systemRestarting:
+                            xbmc.log("## {0} ## sending signal to make case watching UART for power cut".format(self.name), level = xbmc.LOGDEBUG)
+                            self.smbus.write_byte(0x1a, 0xFF)
+
+                        # close smbus connection
+                        self.smbus.close()
+
+                    finally:
+                        self.stopping = True
+                        self.cv.notify_all()
+
+    def monitorCpuTemperature(self): 
 
         tempCache = []
         currentFanValue = -1
-        self.skipWaitForAbort = True
-        self.systemOnShutdown = False
-        self.systemOnRestart = False
-        while not self.abortRequested():
 
-            # if settings change we have to recalculate fan power so we do not waitForAbort(self.checkInterval)
-            # self.skipWaitForAbort is True after settings have changed
-            waitTime = self.checkInterval
-            abortRequestedDuringWait = False
-            while not abortRequestedDuringWait and waitTime > 0 and not self.skipWaitForAbort:
-                shortWait = 5 if waitTime > 5 else waitTime
-                waitTime -= shortWait
-                xbmc.log("## {0} ## waiting for {1} seconds - further {2} seconds to wait left".format(self.name, shortWait, waitTime), level = xbmc.LOGDEBUG)
-                abortRequestedDuringWait = self.waitForAbort(shortWait)
+        while True:
+            with self.cv:
 
-            # if abort was requested while waiting, lease main loop, too!
-            if abortRequestedDuringWait:
-                break
+                # check for stop
+                if self.stopping:
+                    xbmc.log("## {0} ## stop check was true".format(self.name), level = xbmc.LOGDEBUG)
+                    break
 
-            # reset to False for next loop run
-            self.skipWaitForAbort = False
+                # wait
+                now = time.time()
+                while not self.stopping and not self.settingsChanged and self.nextUpdate > now:
+                    timeOut = self.nextUpdate - now
+                    xbmc.log("## {0} ## wait for {1} seconds ...".format(self.name, timeOut), level = xbmc.LOGDEBUG)
+                    self.cv.wait(timeout=timeOut)
+                    now = time.time()
+
+                # check for stop
+                if self.stopping:
+                    xbmc.log("## {0} ## stop check was true".format(self.name), level = xbmc.LOGDEBUG)
+                    break
 
             # get cpu temperature
             with open('/sys/class/thermal/thermal_zone0/temp', 'r') as fd:
@@ -142,23 +210,28 @@ class FanControl(xbmc.Monitor):
                     # send value only if changed
                     if currentFanValue != fanValue:
                         xbmc.log("## {0} ## will set fan power to {1}%".format(self.name, fanValue), level = xbmc.LOGDEBUG)
-                        self.bus.write_byte(0x1a, fanValue)
-                        currentFanValue = fanValue
+                        with self.cv:
+                            if self.stopping:
+                                xbmc.log("## {0} ## setting fan power skipped due to module stop!".format(self.name), level = xbmc.LOGDEBUG)
+                            else:
+                                self.smbus.write_byte(0x1a, fanValue)
+                                currentFanValue = fanValue
                     else:
                         xbmc.log("## {0} ## fan power is already {1}%".format(self.name, fanValue), level = xbmc.LOGDEBUG)
                     break
-                
-        # termination - say goodbye ..!    
-        xbmc.log("## {0} ## got abort request - will stop fan".format(self.name), level = xbmc.LOGDEBUG)
-        # stop listening to power button signal
-        GPIO.remove_event_detect(PWR_BUTTON)
-        # fan off (0%)
-        self.bus.write_byte(0x1a, 0x00)
-        # ready for power cut? - watches UART
-        if self.systemOnShutdown and not self.systemOnRestart:
-            xbmc.log("## {0} ## sending signal to make case watching UART for power cut".format(self.name), level = xbmc.LOGDEBUG)
-            self.bus.write_byte(0x1a, 0xFF)
+
+            # when do we have to check the fan power next?
+            self.nextUpdate = now + self.checkInterval
+            
+            # reset setting flag
+            self.settingsChanged = False
+
 
 if __name__ == '__main__':
-    FanControl()    
+    argonControl = ArgonControl()
+    try:
+        threading.Thread(target = argonControl.monitorCpuTemperature).start()
+        argonControl.waitForAbort()
+    finally:
+        argonControl.stopAddon()  
 

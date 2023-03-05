@@ -21,57 +21,61 @@ msgid "general settings"
 msgstr ""
 
 msgctxt "#32002"
-msgid "check interval in seconds"
+msgid "basic setting"
 msgstr ""
 
 msgctxt "#32003"
-msgid "number of checks to take"
+msgid "check interval in seconds"
 msgstr ""
 
 msgctxt "#32004"
-msgid "minimum fan power in percent"
+msgid "number of checks to take"
 msgstr ""
 
 msgctxt "#32005"
-msgid "thresholds"
+msgid "minimum fan power in percent"
 msgstr ""
 
 msgctxt "#32006"
-msgid "fan power for 30°C"
+msgid "thresholds"
 msgstr ""
 
 msgctxt "#32007"
-msgid "fan power for 40°C"
+msgid "fan power for 30°C"
 msgstr ""
 
 msgctxt "#32008"
-msgid "fan power for 45°C"
+msgid "fan power for 40°C"
 msgstr ""
 
 msgctxt "#32009"
-msgid "fan power for 50°C"
+msgid "fan power for 45°C"
 msgstr ""
 
 msgctxt "#32010"
-msgid "fan power for 55°C"
+msgid "fan power for 50°C"
 msgstr ""
 
 msgctxt "#32011"
-msgid "fan power for 60°C"
+msgid "fan power for 55°C"
 msgstr ""
 
 msgctxt "#32012"
-msgid "fan power for 65°C"
+msgid "fan power for 60°C"
 msgstr ""
 
 msgctxt "#32013"
-msgid "fan power for 70°C"
+msgid "fan power for 65°C"
 msgstr ""
 
 msgctxt "#32014"
-msgid "fan power for 75°C"
+msgid "fan power for 70°C"
 msgstr ""
 
 msgctxt "#32015"
+msgid "fan power for 75°C"
+msgstr ""
+
+msgctxt "#32016"
 msgid "fan power for 80°C"
 msgstr ""
