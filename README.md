@@ -7,7 +7,4 @@ The author of the software is in no way related to the manufacturer of the hardw
 # This project is still under development!
 
 working:
-power cut-off on shutdown and fan control
-
-not yet (completely) implemented:
-power button support
+(nearly) everthing, but don't use busybox's command "reboot" - this will cause a power cut
