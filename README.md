@@ -6,5 +6,5 @@ The author of the software is in no way related to the manufacturer of the hardw
 
 # This project is still under development!
 
-working:
-(nearly) everthing, but don't use busybox's command "reboot" - this will cause a power cut
+current version is untested!
+recent change: power cut on shutdown realized by temporary systemd service. This avoids misbehaviour when "reboot" is called in ssh terminal
