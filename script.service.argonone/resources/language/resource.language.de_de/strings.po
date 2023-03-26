@@ -1,0 +1,85 @@
+# Kodi Media Center language file
+# Addon Name: Argonone service
+# Addon id: service.argonone
+# Addon Provider: fif81
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://github.com/fif81/Libreelec-Argonone/issues\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: fif81\n"
+"Language-Team: fif81\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32001"
+msgid "general settings"
+msgstr "Allgemeine Einstellungen"
+
+msgctxt "#32002"
+msgid "basic setting"
+msgstr "Grundeinstellungen"
+
+msgctxt "#32003"
+msgid "check interval in seconds"
+msgstr "Überprüfungsintervall in Sekunden"
+
+msgctxt "#32004"
+msgid "number of checks to take"
+msgstr "Anzahl der zu verwendenden Überprüfungen"
+
+msgctxt "#32005"
+msgid "constant fan power"
+msgstr "Lüfter mit konstanter Leistung betreiben"
+
+msgctxt "#32006"
+msgid "power fan at"
+msgstr "Lüfterleistung"
+
+msgctxt "#32010"
+msgid "thresholds"
+msgstr "Schwellwerte"
+
+msgctxt "#32011"
+msgid "fan power for 30°C"
+msgstr "Lüfterleistung ab 30°C"
+
+msgctxt "#32012"
+msgid "fan power for 40°C"
+msgstr "Lüfterleistung ab 40°C"
+
+msgctxt "#32013"
+msgid "fan power for 45°C"
+msgstr "Lüfterleistung ab 45°C"
+
+msgctxt "#32014"
+msgid "fan power for 50°C"
+msgstr "Lüfterleistung ab 50°C"
+
+msgctxt "#32015"
+msgid "fan power for 55°C"
+msgstr "Lüfterleistung ab 55°C"
+
+msgctxt "#32016"
+msgid "fan power for 60°C"
+msgstr "Lüfterleistung ab 60°C"
+
+msgctxt "#32017"
+msgid "fan power for 65°C"
+msgstr "Lüfterleistung ab 65°C"
+
+msgctxt "#32018"
+msgid "fan power for 70°C"
+msgstr "Lüfterleistung ab 70°C"
+
+msgctxt "#32019"
+msgid "fan power for 75°C"
+msgstr "Lüfterleistung ab 75°C"
+
+msgctxt "#32020"
+msgid "fan power for 80°C"
+msgstr "Lüfterleistung ab 80°C"
